@@ -68,7 +68,6 @@ def find_path(P): #根据0-1矩阵找出纽结路径
             G.add_edges_from(C1, weight=1)
             G.add_edges_from(C2, weight=2)
 
-            # dist=np.zeros((d,d))
             dist=dict(nx.all_pairs_shortest_path_length(G))#最短路径
 
             D=np.array([[dist[node][nodei] for nodei in range(d)]for node in range(d)])
@@ -92,7 +91,7 @@ def knot_smooth(R,NUM_POINTS):
             for i in range(1,N):
                 theta[0,i] = theta[0,i-1] + np.linalg.norm( R[i,:]-R[i-1,:])   #求范数 
             theta = theta / theta[0,-1] * 2 * math.pi
-             #plt.plot(theta,R)
+
             theta = np.asarray(theta).squeeze()
             theta_iso = np.linspace(0,2*math.pi,NUM_POINTS)
             f1 = sp.interpolate.interp1d(theta,x,kind='slinear')
@@ -104,14 +103,11 @@ def knot_smooth(R,NUM_POINTS):
             
             return [x,y,z]
 
-# figure2knot-V2.0中的自定义函数
+
+
 def knot2figure(R):
-#R=pd.read_csv('R.csv')
-    
     X=np.random.randn(3,3)#正态随机数组
-    #X=np.ones((3,3))
-    #X=X/3
-    #print(X)
+
     def SchmitOrth(mat:np.array):#qr分解
         cols = mat.shape[1]
     
@@ -240,6 +236,8 @@ def knot2figure(R):
     #plt.title(knot2figure)
     #plt.legend()
     plt.show()
+            
+# figure2knot-V2.0中的自定义函数
 def load_figure(figname):
     
     img = skimage.io.imread(figname)    
@@ -416,6 +414,7 @@ def complete_by_interp(R):
     R[:,2]=sp.interpolate.splev(theta,cs)
     
     return R
+
 def polish_curve(R, num_points, nearN):
     
     #step 1: reparameterization
@@ -621,7 +620,7 @@ class f2k:
         return np.array((np.array(x),np.array(y),np.array(z)))
 
     # figure2knot-V2.0主函数
-    # NUM_POINTS为输出三维参数曲线点的个数；SMOOTH_NEAR为smooth函数滑动窗口长度
+    # NUM_POINTS为输出三维参数曲线点的个数；SMOOTH_NEAR为smooth函数滑动窗口长度，需为奇数
     def fun2(self,NUM_POINTS =256,SMOOTH_NEAR = 3):
         P=self.pic
         nPart = np.max(P)
@@ -637,7 +636,7 @@ class f2k:
             path_ind =find_path(M)
             path_array[k] = path_ind
 
-        #% 链环情形：path_collections 会有多个 path_array_sorted， 做成一个 cell，每个元素是一个 path_array_sorted
+        # # 链环情形：path_collections 会有多个 path_array_sorted， 做成一个 cell，每个元素是一个 path_array_sorted
         path_collections =collect_path(path_array,m,n)
         path_array_connected = {}
         for k in range(len(path_collections)): #K=0,1
